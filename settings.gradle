@@ -1,0 +1,3 @@
+include ':asynceither-result'
+include ':asynceither'
+rootProject.name = "AsyncEither"
