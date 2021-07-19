@@ -1,11 +1,3 @@
-plugins {
-    id 'org.jetbrains.kotlin.jvm'
-}
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation project(":asynceither")
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
