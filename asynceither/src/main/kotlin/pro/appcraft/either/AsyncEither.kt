@@ -1,8 +1,9 @@
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
 package pro.appcraft.either
 
-import java.util.*
+import java.util.NoSuchElementException
+import java.util.Optional
 
 typealias AsyncCatching<T> = AsyncEither<Throwable, T>
 
@@ -67,16 +68,14 @@ sealed class AsyncEither<out L, out R> {
         }
     }
 
-    suspend fun leftIfNull(): AsyncEither<L?, R> =
-        flatMap { a -> a?.let(::Right) ?: Left(null) }
-
     // Nullable version of get
     fun orNull(): R? = (this as? Right<R>)?.value
 
     // Error-throwing version of get, for using in try-catch outside of the type
+    @UnsafeEffect
     fun unsafeGet(): R = when (this) {
         is Right<R> -> value
-        is Left<L> -> throw (error as? Throwable) ?: IllegalArgumentException(error.toString())
+        is Left<L> -> throw (error as? Throwable) ?: NoSuchElementException("Expected Right, got Left, error=$error")
     }
 
     fun toOptional(): Optional<out R> = Optional.ofNullable(orNull())
@@ -131,6 +130,9 @@ suspend inline fun <L, R : O, O> AsyncEither<L, R>.getOrHandle(crossinline f: su
     }
 
 suspend fun <L, R : O, O> AsyncEither<L, R>.getOrElse(other: O): O = getOrHandle { other }
+
+suspend fun <L, R> AsyncEither<L, R?>.leftIfNull(): AsyncEither<L?, R> =
+    flatMap { a -> a?.let { b -> AsyncEither.Right(b) } ?: AsyncEither.Left(null) }
 
 fun <L, R : O, O> AsyncEither<L, R>.contains(element: O): Boolean =
     this is AsyncEither.Right<O> && value == element

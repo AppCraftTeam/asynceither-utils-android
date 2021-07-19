@@ -11,6 +11,7 @@ fun <T> AsyncCatching<T>.getOrNull(): T? = orNull()
 fun <T> AsyncCatching<T>.exceptionOrNull(): Throwable? =
     (this as? AsyncEither.Left<Throwable>)?.error
 
+@OptIn(UnsafeEffect::class)
 fun <T> AsyncCatching<T>.getOrThrow(): T = unsafeGet()
 
 suspend fun <T> AsyncCatching<T>.getOrElse(onFailure: suspend (exception: Throwable) -> T): T =
