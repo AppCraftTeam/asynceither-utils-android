@@ -1,15 +1,12 @@
 plugins {
-    id 'java-library'
-    id 'kotlin'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+repositories {
+    mavenCentral()
 }
 
 dependencies {
-    implementation project(':asynceither')
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation project(":asynceither")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
 }
